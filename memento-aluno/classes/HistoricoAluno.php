@@ -1,3 +1,4 @@
+<?php
 class HistoricoAluno
 {
     private array $pilha = [];

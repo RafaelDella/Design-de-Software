@@ -1,3 +1,4 @@
+<?php
 interface Memento
 {
     public function getFaixa(): string;

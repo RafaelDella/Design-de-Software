@@ -1,3 +1,4 @@
+<?php
 class MementoAluno implements Memento
 {
     private string $faixa;

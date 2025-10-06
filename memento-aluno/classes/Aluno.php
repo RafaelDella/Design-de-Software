@@ -1,4 +1,5 @@
-class Aluno extends Usuario
+<?php
+ class Aluno extends Usuario
 {
     private string $faixa;
     private float $peso;
