@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <title>Aluno Memento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0f172a;        /* slate-900 */
+      --card:#111827;      /* gray-900 */
+      --muted:#94a3b8;     /* slate-400 */
+      --accent:#22d3ee;    /* cyan-400 */
+      --accent-2:#60a5fa;  /* blue-400 */
+      --text:#e5e7eb;      /* gray-200 */
+      --ok:#10b981;        /* green-500 */
+      --warn:#f59e0b;      /* amber-500 */
+      --danger:#ef4444;    /* red-500 */
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:24px;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,Arial;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(34,211,238,.15), transparent 60%),
+                  radial-gradient(1200px 600px at 120% 0%, rgba(96,165,250,.12), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    h1{font-size:clamp(20px,3vw,28px);margin:0}
+    .badge{font-size:12px;color:var(--bg);background:linear-gradient(135deg,var(--accent),var(--accent-2));
+           padding:6px 10px;border-radius:999px;font-weight:600}
+
+    .grid{
+      display:grid; gap:18px;
+      grid-template-columns:1.2fr .8fr;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(148,163,184,.15);
+      border-radius:var(--radius);
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      padding:18px;
+      backdrop-filter: blur(6px);
+    }
+    .card h2{margin:.25rem 0 1rem; font-size:18px; color:#fff}
+    .section-title{margin:14px 0 6px; font-size:12px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase}
+
+    .row{display:grid; gap:12px; grid-template-columns:repeat(2,1fr)}
+    .field{display:flex; flex-direction:column; gap:6px}
+    label{font-size:13px; color:var(--muted)}
+    input, select{
+      height:40px; padding:0 12px; border-radius:12px;
+      border:1px solid rgba(148,163,184,.2); background:#0b1220; color:var(--text);
+      outline:none;
+    }
+    input:focus, select:focus{border-color:var(--accent)}
+    .actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
+
+    button{
+      border:0; cursor:pointer; padding:10px 14px;
+      border-radius:12px; color:#0b1220; font-weight:700; letter-spacing:.02em;
+      transition:transform .05s ease, filter .15s ease;
+    }
+    button:active{transform:translateY(1px)}
+    .btn-save{background:linear-gradient(135deg,var(--ok),#34d399)}
+    .btn-restore{background:linear-gradient(135deg,var(--warn),#fbbf24)}
+    .btn-clear{background:linear-gradient(135deg,var(--danger),#f87171)}
+    .muted{color:var(--muted); font-size:13px}
+
+    .history-list{display:flex; flex-direction:column; gap:10px; max-height:360px; overflow:auto; padding-right:6px}
+    .history-item{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      padding:10px 12px; border-radius:12px; background:#0a1020; border:1px solid rgba(148,163,184,.12);
+    }
+    .caps{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#93c5fd}
+    .pill{font-size:12px; background:#0b1227; border:1px solid rgba(148,163,184,.16); padding:6px 8px; border-radius:999px}
+    footer{margin-top:18px; text-align:center; color:var(--muted); font-size:12px}
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Aluno <span class="muted">• Padrão Memento</span></h1>
+      <span class="badge">Demo UI</span>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Dados do Aluno</h2>
+        <form id="alunoForm" method="post" action="aluno_controller.php">
+          <div class="section-title">Usuário</div>
+          <div class="row">
+            <div class="field">
+              <label for="nome">Nome</label>
+              <input id="nome" name="nome" placeholder="Ex.: João da Silva" required>
+            </div>
+            <div class="field">
+              <label for="cpf">CPF</label>
+              <input id="cpf" name="cpf" placeholder="000.000.000-00" required>
+            </div>
+            <div class="field">
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" placeholder="email@exemplo.com" required>
+            </div>
+            <div class="field">
+              <label for="sexo">Sexo</label>
+              <select id="sexo" name="sexo">
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+                <option value="O">Outro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-title">Estado do Aluno</div>
+          <div class="row">
+            <div class="field">
+              <label for="faixa">Faixa</label>
+              <select id="faixa" name="faixa">
+                <option>Branca</option>
+                <option>Amarela</option>
+                <option>Laranja</option>
+                <option>Verde</option>
+                <option>Azul</option>
+                <option>Roxa</option>
+                <option>Marrom</option>
+                <option>Preta</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="peso">Peso (kg)</label>
+              <input id="peso" name="peso" type="number" step="0.1" min="0" placeholder="72.5">
+            </div>
+            <div class="field">
+              <label for="altura">Altura (m)</label>
+              <input id="altura" name="altura" type="number" step="0.01" min="0" placeholder="1.78">
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-save"    type="submit" name="action" value="salvar">Salvar (snapshot)</button>
+            <button class="btn-restore" type="submit" name="action" value="restaurar">Restaurar (último)</button>
+            <button class="btn-clear"   type="submit" name="action" value="deletar">Limpar histórico</button>
+          </div>
+          <p class="muted" style="margin-top:8px">
+            As ações enviam <code>POST</code> para <code>aluno_controller.php</code> com <code>action=salvar|restaurar|deletar</code>.
+          </p>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Histórico de Estados</h2>
+        <div class="history-list">
+          <div class="history-item">
+            <div>
+              <div class="caps">Exemplo</div>
+              <div class="muted">Faixa: Azul • Peso: 75.1 kg • Altura: 1.78 m</div>
+            </div>
+            <span class="pill">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -6,7 +6,6 @@ require_once __DIR__ . '\public/classes/DeletarConta.php';
 require_once __DIR__ . '\public/classes/MatricularUsuario.php';
 require_once __DIR__ . '\public/classes/GerenciadorCadastro.php';
 
-// === AUTOLOADER ==============================================================
 spl_autoload_register(function ($class) {
     $file = __DIR__ . '/classes/' . $class . '.php'; // <- pasta classes na raiz
     if (is_file($file)) {
@@ -14,25 +13,12 @@ spl_autoload_register(function ($class) {
     }
 });
 
-// === SESSÃO (depois do autoload) ============================================
 session_start();
 
-// Se por algum motivo a sessão antiga tiver um objeto incompleto, limpa:
 if (isset($_SESSION['usuario']) && !($_SESSION['usuario'] instanceof Usuario)) {
     unset($_SESSION['usuario']);
 }
 
-// !!! NÃO use session_destroy() aqui.
-// Se quiser resetar UMA vez, faça manualmente: apague o cookie de sessão no navegador
-// ou rode temporariamente este bloco, depois remova:
-//
-// if (isset($_GET['reset'])) {
-//     session_destroy();
-//     header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
-//     exit;
-// }
-
-// === DADOS INICIAIS ==========================================================
 if (!isset($_SESSION['usuario'])) {
     $_SESSION['usuario'] = new Usuario(
         id: 1,
@@ -49,7 +35,6 @@ $ACADEMIAS_FIXAS = [
     new Academia(12, 'Academia Sul'),
 ];
 
-// === HANDLER POST ============================================================
 $msg = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $acao = $_POST['acao'] ?? '';
@@ -81,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $usuario = $_SESSION['usuario'];
 
-// defensiva: garante que academias é array
 if (!is_array($usuario->academias)) {
     $usuario->academias = [];
 }

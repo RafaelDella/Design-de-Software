@@ -1,40 +1,35 @@
 <?php
-// ── Autoloader ───────────────────────────────────────────────────────────────
 spl_autoload_register(function ($class) {
     $file = __DIR__ . '/classes/' . $class . '.php';
     if (is_file($file)) require_once $file;
 });
 
-// ── Sessão ───────────────────────────────────────────────────────────────────
 session_start();
 
-// se existir algo quebrado na sessão, limpa
 if (isset($_SESSION['notif']) && !($_SESSION['notif'] instanceof Notificacao)) {
     unset($_SESSION['notif']);
 }
 
-// cria o objeto de estado da notificação
 if (!isset($_SESSION['notif'])) {
-    $_SESSION['notif'] = new Notificacao(true); // começa liberado
+    $_SESSION['notif'] = new Notificacao(true);
 }
 $notif = $_SESSION['notif'];
 
 $msg = null;
 $abrirModal = false;
 
-// ── Handler POST ─────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $acao = $_POST['acao'] ?? '';
 
     try {
         if ($acao === 'alterar_estado') {
-            $estado = $_POST['estado'] ?? 'liberado'; // liberado|bloqueado
+            $estado = $_POST['estado'] ?? 'liberado';
             $contexto = new GerenciadorNotificacao(
                 $estado === 'bloqueado' ? new BloquearNotificacao()
                                          : new AtivarNotificacao()
             );
             $contexto->processar($notif);
-            $_SESSION['notif'] = $notif; // persiste o novo estado
+            $_SESSION['notif'] = $notif; 
             $msg = $notif->getDisparar()
                 ? 'Notificação LIBERADA.'
                 : 'Notificação BLOQUEADA.';
@@ -42,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($acao === 'disparar') {
             if ($notif->getDisparar()) {
-                $abrirModal = true; // front-end abrirá o modal
+                $abrirModal = true;
                 $msg = 'Popup disparado com sucesso.';
             } else {
                 $msg = 'Popup bloqueado. Altere o seletor para "Liberado".';
@@ -117,7 +112,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
-<!-- Modal (popup) -->
 <div class="modal fade" id="notifModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
