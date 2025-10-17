@@ -1,18 +1,23 @@
 <?php
 
-$selected = $_POST['faixa'] ?? null;
-$instance = null;
-$error = null;
+$selected = $_POST['tipo'] ?? null;
+$instancia = null;
+$erro = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        if (!in_array($selected, ['INFANTIL', 'JUVENIL', 'ADULTO'], true)) {
+        if (!in_array($selected, ['PROFISSIONAL', 'AMADOR', '4FUN'], true)) {
             throw new InvalidArgumentException('Seleção inválida.');
         }
-        $enum = CategoriaFaixa::from($selected);
-        $instance = CategoriaFactory::setCategoria($enum);
+        // Mapeia string do POST para enum
+        $enum = match ($selected) {
+            'PROFISSIONAL' => CampeonatoCat::PROFISSIONAL,
+            'AMADOR'       => CampeonatoCat::AMADOR,
+            '4FUN'         => CampeonatoCat::FOUR_FUN,
+        };
+        $instancia = CampeonatoFactory::setCampeonato($enum);
     } catch (Throwable $e) {
-        $error = $e->getMessage();
+        $erro = $e->getMessage();
     }
 }
 ?>
@@ -21,12 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Factory — Categoria</title>
+  <title>Factory — Campeonato</title>
   <style>
     :root { --bg:#0f1221; --card:#171a2e; --muted:#aab1c7; }
     *{box-sizing:border-box;font-family:system-ui,Inter,Arial}
     body{margin:0;background:linear-gradient(180deg,#0b0e1a,#0f1221);color:#eef1ff;min-height:100vh;display:flex;align-items:center;justify-content:center}
-    .wrap{width:min(820px,92vw)}
+    .wrap{width:min(860px,92vw)}
     .card{background:var(--card);border-radius:18px;padding:24px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
     h1{margin:.2rem 0 1rem;font-weight:800}
     .muted{color:var(--muted)}
@@ -42,35 +47,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>Categoria — <span class="muted">Factory</span></h1>
+      <h1>Campeonato — <span class="muted">Factory</span></h1>
 
       <form method="post">
-        <label for="faixa">Escolha a faixa:</label>
-        <select id="faixa" name="faixa">
-          <option value="INFANTIL" <?= $selected==='INFANTIL'?'selected':'' ?>>INFANTIL</option>
-          <option value="JUVENIL"  <?= $selected==='JUVENIL'?'selected':'' ?>>JUVENIL</option>
-          <option value="ADULTO"   <?= $selected==='ADULTO'?'selected':'' ?>>ADULTO</option>
+        <label for="tipo">Tipo de campeonato:</label>
+        <select id="tipo" name="tipo">
+          <option value="PROFISSIONAL" <?= $selected==='PROFISSIONAL'?'selected':'' ?>>Profissional</option>
+          <option value="AMADOR"       <?= $selected==='AMADOR'?'selected':'' ?>>Amador</option>
+          <option value="4FUN"         <?= $selected==='4FUN'?'selected':'' ?>>4Fun</option>
         </select>
         <button type="submit">Criar com Factory</button>
       </form>
 
-      <?php if ($error): ?>
-        <p class="err"><?= htmlspecialchars($error) ?></p>
+      <?php if ($erro): ?>
+        <p class="err"><?= htmlspecialchars($erro) ?></p>
       <?php endif; ?>
 
-      <?php if ($instance instanceof Categoria): ?>
+      <?php if ($instancia instanceof Campeonato): ?>
         <div class="box">
           <strong>Instância criada:</strong>
-          <p>Classe concreta: <code><?= htmlspecialchars($instance::class) ?></code></p>
-          <p>Enum (<code>get()</code>): <code><?= htmlspecialchars($instance->get()->value) ?></code></p>
-          <p>Descrição: <?= htmlspecialchars($instance->descricao()) ?></p>
+          <p>Classe concreta: <code><?= htmlspecialchars($instancia::class) ?></code></p>
+          <p>Enum (<code>get()</code>): <code><?= htmlspecialchars($instancia->get()->value) ?></code></p>
+          <p>Descrição: <?= htmlspecialchars($instancia->descricao()) ?></p>
         </div>
       <?php endif; ?>
 
       <p class="muted" style="margin-top:10px">
-        Diagrama respeitado: <code>CategoriaFactory::setCategoria(cat: CategoriaFaixa): Categoria</code>
-        → retorna <code>Infantil</code>, <code>Juvenil</code> ou <code>Adulto</code>. A base <code>Categoria</code> possui
-        <code>get()</code> e <code>set(CategoriaFaixa)</code>.
+        Diagrama respeitado: <code>CampeonatoFactory::setCampeonato(cat: CampeonatoCat): Campeonato</code>
+        → retorna <code>Profissional</code>, <code>Amador</code> ou <code>4Fun</code>. A base <code>Campeonato</code> expõe
+        <code>get()</code> e <code>set(CampeonatoCat)</code>.
       </p>
     </div>
   </div>
